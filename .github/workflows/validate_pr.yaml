@@ -29,10 +29,11 @@ jobs:
 
       - name: Compute base status (from main, before PR changes)
         run: |
-          # Temporarily restore main's data files to compute pre-PR status
+          # Restore main's data files and remove PR-only files (e.g. new witnesses)
           git checkout origin/main -- witnesses/ contradictions/ properties/ config.yaml
+          git clean -fd witnesses/ contradictions/
           python scripts/compute_status.py
-          # Restore PR branch files (status.json is gitignored, so it persists)
+          # Restore PR state (status.json is gitignored, so it persists)
           git checkout HEAD -- .
 
       - name: Validate added files
