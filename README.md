@@ -1,60 +1,78 @@
 # Graph Property Atlas
 
 A collaborative, machine-verified repository classifying which combinations of
-Boolean graph properties can coexist.
+Boolean graph properties can coexist in finite simple graphs.
+
+Every claim is backed by evidence: example graphs verified by SageMath, and
+impossibility proofs checked by Lean 4 against Mathlib.
 
 ## The Idea
 
-Given a set of properties of finite simple graphs — like *connected*, *bipartite*,
-*planar*, *Hamiltonian*, etc. — one can ask: which combinations are possible? For
-example, can a graph be both a forest and non-bipartite? (No.) Can it be regular,
-connected, and Eulerian? (Yes — any even-degree connected graph.)
+Given properties of finite simple graphs — *connected*, *bipartite*, *forest*,
+*Hamiltonian*, *planar*, ... — which combinations are simultaneously achievable?
 
-The **Graph Property Atlas** answers these questions systematically. Every assignment
-of true/false to every tracked property is classified as:
+For |P| properties there are 2^|P| possible true/false assignments ("cells").
+The atlas classifies each cell as:
 
-- **Realized** — witnessed by an explicit example graph, or
-- **Impossible** — ruled out by a formal Lean 4 proof, or
-- **Open** — status unknown (a contribution opportunity!).
-
-## What's Here
-
-- **Property definitions** in three aligned formats: LaTeX (human-readable),
-  SageMath (computable), and Lean 4 (formally verified).
-- **Witness graphs** in YAML with full property vectors and optional certificates.
-- **Impossibility proofs** with both informal LaTeX and formal Lean 4 versions.
-- **Verification scripts** that check everything is consistent.
+- **Realized** — witnessed by an explicit graph (verified by SageMath checkers)
+- **Impossible** — ruled out by a formal Lean 4 proof (compiled against Mathlib)
+- **Open** — status unknown (contribution opportunity!)
 
 ## Current Status
 
-| Properties | Cells | Realized | Impossible | Open |
-|------------|-------|----------|------------|------|
-| 3 (connected, bipartite, forest) | 8 | 6 | 2 | 0 |
+<!-- Update these numbers when properties/witnesses/contradictions change -->
+
+| Properties | Cells | Realized | Impossible | Open | Fill rate |
+|------------|-------|----------|------------|------|-----------|
+| 3 (connected, bipartite, forest) | 8 | 6 | 2 | 0 | 100% |
+
+**Properties tracked:** connected, bipartite, forest
+
+**Impossibility proofs:**
+- *forest* ⇒ *bipartite* (acyclic graphs are 2-colorable) — [Lean proof](contradictions/Nbipartite__forest/lean_proof.lean)
+
+Run `python scripts/coverage_report.py` for a detailed breakdown, or
+`python scripts/query.py --open` to find open cells.
+
+## Quick Start
+
+**Verify everything locally:**
+
+```bash
+# SageMath environment
+conda env create -f environment.yaml
+conda activate graph-atlas
+
+# Verify witnesses and property tests
+sage scripts/verify_witnesses.sage --cross-check
+sage scripts/verify_property_tests.sage
+
+# Consistency check
+python scripts/check_consistency.py
+
+# Lean build (requires elan)
+python scripts/assemble_lean.py --check
+```
+
+## Repository Structure
+
+```
+properties/          Property definitions (LaTeX + SageMath + tests)
+witnesses/           Example graphs with full property vectors
+contradictions/      Impossibility proofs (LaTeX + Lean 4)
+lean/                Lean 4 project (Mathlib-based formal definitions)
+gallery/             Additional notable graph examples
+scripts/             Verification, status computation, and query tools
+docs/                Reference documentation
+```
+
+See [DESIGN_SPEC.md](DESIGN_SPEC.md) for the full specification.
 
 ## Contributing
 
-This is a young project. We're building toward a larger property set and welcome
-contributions of:
-
-- New witness graphs for open cells
-- Smaller witnesses that beat existing records
-- Lean 4 proofs of impossibility
-- New property definitions (requires LaTeX + SageMath + Lean alignment)
-
-See `DESIGN_SPEC.md` for the full specification and `AGENTS.md` for workflow details.
-
-## Setup
-
-**SageMath** (for verification):
-```bash
-conda env create -f environment.yaml
-conda activate graph-atlas
-```
-
-**Lean 4** (for formal proofs):
-```bash
-cd lean && lake build
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add witnesses, proofs, and
+properties. Contributions of all sizes welcome — from a single witness graph
+to a new impossibility proof.
 
 ## License
 
