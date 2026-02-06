@@ -6,6 +6,10 @@ Boolean graph properties can coexist in finite simple graphs.
 Every claim is backed by evidence: example graphs verified by SageMath, and
 impossibility proofs checked by Lean 4 against Mathlib.
 
+**[Interactive Explorer](https://schmittj.github.io/graph-property-atlas/)** —
+browse all cells, filter by property and status, and see which combinations are
+still open.
+
 ## The Idea
 
 Given properties of finite simple graphs — *connected*, *bipartite*, *forest*,
