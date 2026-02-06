@@ -175,13 +175,15 @@ function projectRows(filtered, enabledPids) {
   return Array.from(map.values()).map(row => {
     const statuses = new Set(row.cells.map(c => c.status));
     let status;
-    if (statuses.size === 1) {
-      status = row.cells[0].status;
+    if (statuses.has("realized")) {
+      // Any witness means the combination is achievable
+      status = "realized";
+    } else if (!statuses.has("open")) {
+      // All cells impossible — combination is provably unachievable
+      status = "impossible";
     } else {
-      // Mixed — show most interesting: open > impossible > realized
-      if (statuses.has("open")) status = "open";
-      else if (statuses.has("impossible")) status = "impossible";
-      else status = "realized";
+      // No witness yet, but not fully ruled out
+      status = "open";
     }
 
     // Collect info text
