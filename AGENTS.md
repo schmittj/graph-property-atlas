@@ -50,9 +50,23 @@ See `DESIGN_SPEC.md` §4 for the full directory structure. Key points:
 
 ## Working with SageMath
 
-- Always run sage scripts with the conda environment activated.
-- Property checkers follow the `check(G, **kwargs) -> bool` signature.
+- Run sage scripts via `conda run -n graph-atlas sage <script>`.
 - Certificates are pure data, never executable code.
+
+### Property Checker Architecture
+
+Each `check.sage` declares a `CERTIFICATE_MODE`:
+
+- **`"generic"`** — Cheap algorithm, no certificates. Just `check(G)`. (connected, forest)
+- **`"both"`** — Has generic + certified paths. Must also define `check_no_certs(G)`.
+  Default verification uses certs if present; `--cross-check` flag compares both.
+  (bipartite, hamiltonian)
+- **`"certified"`** — No practical generic algorithm. Witnesses must provide certs.
+  (cayley, vertex_transitive)
+
+Design rationale: certificates exist to make verification tractable for expensive
+properties. Cross-checking against generic algorithms catches cert/algorithm
+misalignment but should be optional since it can be slow.
 
 ## Git Workflow
 

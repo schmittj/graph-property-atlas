@@ -1,9 +1,15 @@
+# Verification mode:
+#   "generic"    — standard algorithm, no certificates needed
+#   "certified"  — requires certificates in witness data
+#   "both"       — has generic + certified; --cross-check compares them
+CERTIFICATE_MODE = "generic"
+
 def check(G, **kwargs):
     """
     Check whether G is connected.
 
     A graph is connected if it has exactly one connected component.
-    No certificates — the standard algorithm is O(V+E).
+    Standard algorithm is O(V+E), no certificates needed.
 
     Parameters
     ----------

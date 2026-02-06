@@ -8,6 +8,10 @@ For each witness:
   3. For each property, run the checker and compare against declared value.
   4. Validate any certificates/counter-certificates.
 
+Usage:
+  sage verify_witnesses.sage                 # standard verification
+  sage verify_witnesses.sage --cross-check   # also cross-check certified results
+
 Exit code 0 if all pass, 1 if any fail.
 """
 
@@ -43,8 +47,14 @@ def load_property_registry():
 
 _checker_cache = {}
 
-def load_checker(prop_id):
-    """Load a property checker from properties/<id>/check.sage (cached)."""
+def load_checker_module(prop_id):
+    """Load a property checker module from properties/<id>/check.sage (cached).
+
+    Returns a dict with:
+      - "check": the main check function
+      - "check_no_certs": generic algorithm (if defined)
+      - "mode": CERTIFICATE_MODE ("generic", "certified", or "both")
+    """
     if prop_id in _checker_cache:
         return _checker_cache[prop_id]
     checker_path = os.path.join(PROPERTIES_DIR, prop_id, "check.sage")
@@ -56,8 +66,13 @@ def load_checker(prop_id):
     exec(compile(code, checker_path, "exec"), namespace)
     if "check" not in namespace:
         raise ValueError(f"Checker {checker_path} does not define a 'check' function")
-    _checker_cache[prop_id] = namespace["check"]
-    return _checker_cache[prop_id]
+    module = {
+        "check": namespace["check"],
+        "check_no_certs": namespace.get("check_no_certs"),
+        "mode": namespace.get("CERTIFICATE_MODE", "generic"),
+    }
+    _checker_cache[prop_id] = module
+    return module
 
 
 # ---------------------------------------------------------------------------
@@ -105,7 +120,7 @@ def decode_graph(graph_data):
 # Witness verification
 # ---------------------------------------------------------------------------
 
-def verify_witness(filepath, property_ids, min_vert):
+def verify_witness(filepath, property_ids, min_vert, cross_check=False):
     """Verify a single witness file. Returns list of error messages."""
     errors = []
     name = os.path.basename(filepath)
@@ -146,10 +161,13 @@ def verify_witness(filepath, property_ids, min_vert):
 
         declared_value = declared[prop_id]
         try:
-            checker = load_checker(prop_id)
+            module = load_checker_module(prop_id)
         except Exception as e:
             errors.append(f"{name}/{prop_id}: Failed to load checker: {e}")
             continue
+
+        checker = module["check"]
+        mode = module["mode"]
 
         # Collect relevant kwargs (certificates + counter-certificates)
         kwargs = {}
@@ -158,6 +176,7 @@ def verify_witness(filepath, property_ids, min_vert):
         for key, val in counter_certs.items():
             kwargs[key] = val
 
+        # Run the main check
         try:
             computed = checker(G, **kwargs)
         except Exception as e:
@@ -168,17 +187,38 @@ def verify_witness(filepath, property_ids, min_vert):
             errors.append(
                 f"{name}/{prop_id}: Declared {declared_value}, computed {computed}"
             )
+            continue
+
+        # Cross-check: if mode is "both" and --cross-check is enabled,
+        # also run the generic algorithm and verify agreement
+        if cross_check and mode == "both" and module["check_no_certs"] is not None:
+            try:
+                generic_result = module["check_no_certs"](G)
+            except Exception as e:
+                errors.append(
+                    f"{name}/{prop_id}: Cross-check (generic algorithm) raised error: {e}"
+                )
+                continue
+            if generic_result != computed:
+                errors.append(
+                    f"{name}/{prop_id}: Cross-check MISMATCH: "
+                    f"certified={computed}, generic={generic_result}"
+                )
 
     return errors
 
 
 def main():
+    cross_check = "--cross-check" in sys.argv
+
     config = load_config()
     min_vert = config["min_vert"]
     property_ids = load_property_registry()
 
     print(f"Properties: {property_ids}")
     print(f"MIN_VERT: {min_vert}")
+    if cross_check:
+        print("Cross-check mode: ON")
     print()
 
     # Find all witness files
@@ -195,7 +235,7 @@ def main():
     all_errors = []
     for filepath in witness_files:
         name = os.path.basename(filepath)
-        errors = verify_witness(filepath, property_ids, min_vert)
+        errors = verify_witness(filepath, property_ids, min_vert, cross_check)
         if errors:
             print(f"FAIL  {name}")
             for e in errors:

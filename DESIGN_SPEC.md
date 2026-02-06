@@ -222,9 +222,22 @@ properties:
 
 ### 5.2 Property Checker (`properties/<id>/check.sage`)
 
-Each checker must define a function with the following signature:
+Each checker file must define a module-level `CERTIFICATE_MODE` constant and a `check` function. Optionally, it may define `check_no_certs` for cross-checking.
+
+#### Certificate Modes
+
+| Mode | Meaning | `check_no_certs` | Example properties |
+|------|---------|-------------------|--------------------|
+| `"generic"` | Standard algorithm, no certificates needed. | Not needed (check already is generic). | `connected`, `forest` |
+| `"both"` | Has both generic and certified paths. If certs are provided, validates them; otherwise falls back to generic. | Required (enables cross-checking). | `bipartite`, `hamiltonian` |
+| `"certified"` | No practical generic algorithm. Witnesses must provide certificates. | Not defined. | `cayley`, `vertex_transitive` |
+
+#### API
 
 ```python
+# Required: certificate mode declaration
+CERTIFICATE_MODE = "generic"  # or "both" or "certified"
+
 def check(G, **kwargs):
     """
     Check whether the SageMath Graph G satisfies this property.
@@ -234,19 +247,22 @@ def check(G, **kwargs):
     G : sage.graphs.graph.Graph
         A simple graph.
     **kwargs : dict
-        Optional certificate/counter-certificate arguments.
-        Keys are prefixed with the property ID to avoid collisions.
+        Certificate/counter-certificate arguments (from witness YAML).
 
     Returns
     -------
     bool
-
-    Raises
-    ------
-    ValueError
-        If both a certificate and counter-certificate are provided.
     """
+
+# Required for "both" mode, enables --cross-check:
+def check_no_certs(G):
+    """Generic algorithm only, ignoring all certificates."""
 ```
+
+#### Verification modes
+
+- `sage verify_witnesses.sage` — uses `check(G, **certs)`. Fast: certified properties use certificate validation only.
+- `sage verify_witnesses.sage --cross-check` — additionally calls `check_no_certs(G)` for `"both"`-mode properties and verifies agreement. Slower but catches cert/algorithm misalignment.
 
 ### 5.3 Certificates and Counter-Certificates
 

@@ -1,3 +1,9 @@
+# Verification mode:
+#   "generic"    — standard algorithm, no certificates needed
+#   "certified"  — requires certificates in witness data
+#   "both"       — has generic + certified; --cross-check compares them
+CERTIFICATE_MODE = "both"
+
 def check(G, **kwargs):
     """
     Check whether G is bipartite.
@@ -5,12 +11,13 @@ def check(G, **kwargs):
     A graph is bipartite if its vertex set admits a 2-coloring with no
     monochromatic edges. Equivalently, it contains no odd cycle.
 
-    Optional certificate (for TRUE):
+    Certificate (for TRUE):
         bipartite_coloring: dict mapping vertices to 0 or 1.
-    Optional counter-certificate (for FALSE):
+    Counter-certificate (for FALSE):
         bipartite_odd_cycle: list of distinct vertices forming an odd cycle.
 
-    Certificates are validated AND cross-checked against the standard algorithm.
+    If certificates are provided, validates them and returns the certified
+    result. If not, falls back to the generic algorithm.
 
     Parameters
     ----------
@@ -25,9 +32,6 @@ def check(G, **kwargs):
     counter = kwargs.get("bipartite_odd_cycle")
     if cert is not None and counter is not None:
         raise ValueError("Cannot provide both certificate and counter-certificate")
-
-    # Always compute the ground truth
-    ground_truth = G.is_bipartite()
 
     if cert is not None:
         # Verify 2-coloring certificate
@@ -49,10 +53,6 @@ def check(G, **kwargs):
                 raise ValueError(
                     f"Certificate invalid: edge {u}-{v} has same color {cert[u]}"
                 )
-        if not ground_truth:
-            raise ValueError(
-                "Certificate claims bipartite, but standard algorithm disagrees"
-            )
         return True
 
     if counter is not None:
@@ -76,10 +76,12 @@ def check(G, **kwargs):
                 raise ValueError(
                     f"Counter-certificate invalid: no edge {u}-{v}"
                 )
-        if ground_truth:
-            raise ValueError(
-                "Counter-certificate claims non-bipartite, but standard algorithm disagrees"
-            )
         return False
 
-    return ground_truth
+    # No certificates provided — fall back to generic
+    return G.is_bipartite()
+
+
+def check_no_certs(G):
+    """Generic algorithm, ignoring all certificates. Used for cross-checking."""
+    return G.is_bipartite()
