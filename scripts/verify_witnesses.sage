@@ -252,5 +252,9 @@ def main():
 
 
 if __name__ == "__main__":
-    exit_code = main()
-    sys.exit(exit_code)
+    # os._exit bypasses Sage's sys.exit interception which mishandles exit codes
+    import os as _os
+    _rc = main()
+    sys.stdout.flush()
+    sys.stderr.flush()
+    _os._exit(_rc)
