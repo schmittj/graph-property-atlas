@@ -6,5 +6,9 @@
 
 import Mathlib.Combinatorics.SimpleGraph.Acyclic
 
+namespace GraphAtlas
+
 /-- A graph is a forest (acyclic) if it contains no cycle. -/
 abbrev IsForest {V : Type*} (G : SimpleGraph V) : Prop := G.IsAcyclic
+
+end GraphAtlas

@@ -7,5 +7,9 @@
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
+namespace GraphAtlas
+
 /-- A graph is connected if it has exactly one connected component. -/
 abbrev IsConnected {V : Type*} (G : SimpleGraph V) : Prop := G.Connected
+
+end GraphAtlas

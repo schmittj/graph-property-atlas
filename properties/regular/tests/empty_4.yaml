@@ -1,0 +1,6 @@
+description: "Empty graph on 4 vertices — 0-regular"
+graph:
+  format: edge_list
+  vertices: 4
+  data: []
+expected: true

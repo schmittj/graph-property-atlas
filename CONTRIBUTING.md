@@ -69,6 +69,8 @@ import GraphAtlas.Defs
 import GraphAtlas.Properties.Forest
 import GraphAtlas.Properties.Hamiltonian
 
+open GraphAtlas
+
 theorem forest_hamiltonian_contradiction
     {V : Type*} [Fintype V] [DecidableEq V]
     (G : SimpleGraph V) [DecidableRel G.Adj]

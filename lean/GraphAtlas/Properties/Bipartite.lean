@@ -7,6 +7,10 @@
 
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
 
+namespace GraphAtlas
+
 /-- A graph is bipartite if it is 2-colorable. -/
 abbrev IsBipartite {V : Type*} (G : SimpleGraph V) : Prop :=
   SimpleGraph.IsBipartite G
+
+end GraphAtlas

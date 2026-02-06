@@ -1,0 +1,6 @@
+description: "P_3 — not regular (degrees 1,2,1)"
+graph:
+  format: edge_list
+  vertices: 3
+  data: [[0,1], [1,2]]
+expected: false

@@ -2,6 +2,8 @@ import GraphAtlas.Defs
 import GraphAtlas.Properties.Forest
 import GraphAtlas.Properties.Bipartite
 
+open GraphAtlas
+
 theorem not_bipartite_forest_contradiction
     {V : Type*} [Fintype V] [DecidableEq V]
     (G : SimpleGraph V) [DecidableRel G.Adj]

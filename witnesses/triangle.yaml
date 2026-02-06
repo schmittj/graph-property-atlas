@@ -9,6 +9,7 @@ properties:
   connected: true
   bipartite: false
   forest: false
+  regular: true
 
 counter_certificates:
   bipartite_odd_cycle: [0, 1, 2]

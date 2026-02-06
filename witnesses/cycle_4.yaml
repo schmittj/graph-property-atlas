@@ -9,6 +9,7 @@ properties:
   connected: true
   bipartite: true
   forest: false
+  regular: true
 
 certificates:
   bipartite_coloring: {0: 0, 1: 1, 2: 0, 3: 1}

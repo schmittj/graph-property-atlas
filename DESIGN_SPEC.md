@@ -209,13 +209,13 @@ The registry is an **unordered** set of property metadata. There are no index fi
 ```yaml
 properties:
   - id: connected
-    lean_name: IsConnected
+    lean_name: GraphAtlas.IsConnected
     display_name: Connected
   - id: bipartite
-    lean_name: IsBipartite
+    lean_name: GraphAtlas.IsBipartite
     display_name: Bipartite
   - id: cayley
-    lean_name: IsCayley
+    lean_name: GraphAtlas.IsCayley
     display_name: Cayley graph
   # ...
 ```
