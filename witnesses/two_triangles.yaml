@@ -11,9 +11,7 @@ properties:
   forest: false
 
 counter_certificates:
-  connected_components: [[0, 1, 2], [3, 4, 5]]
   bipartite_odd_cycle: [0, 1, 2]
-  forest_cycle: [0, 1, 2]
 
 provenance:
   source: "Elementary"

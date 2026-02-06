@@ -13,9 +13,6 @@ properties:
 certificates:
   bipartite_coloring: {0: 0, 1: 1, 2: 0, 3: 1}
 
-counter_certificates:
-  connected_components: [[0, 1], [2, 3]]
-
 provenance:
   source: "Elementary"
   found_by: "manual"

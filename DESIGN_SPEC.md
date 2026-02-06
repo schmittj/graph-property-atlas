@@ -279,9 +279,10 @@ Counter-certificates prove a property is FALSE, enabling fast verification of ne
 #### Rules
 
 - A witness file must not provide both a certificate and counter-certificate for the same property.
-- If a certificate is provided for a TRUE property, the checker verifies it.
-- If a counter-certificate is provided for a FALSE property, the checker verifies it.
-- If neither is provided, the checker falls back to a general algorithm (which may be slow).
+- If a certificate is provided for a TRUE property, the checker verifies it **and** cross-checks against the standard algorithm.
+- If a counter-certificate is provided for a FALSE property, the checker verifies it **and** cross-checks against the standard algorithm.
+- If neither is provided, the checker runs the general algorithm.
+- Properties with O(V+E) algorithms (e.g. `connected`, `forest`) do not need certificates — the checker simply runs the standard algorithm. Certificates are most valuable for properties that are expensive to verify from scratch (e.g. `vertex_transitive`, `cayley`, `hamiltonian`).
 
 ### 5.4 Witness Files (`witnesses/<name>.yaml`)
 

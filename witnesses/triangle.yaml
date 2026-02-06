@@ -12,7 +12,6 @@ properties:
 
 counter_certificates:
   bipartite_odd_cycle: [0, 1, 2]
-  forest_cycle: [0, 1, 2]
 
 provenance:
   source: "Elementary"

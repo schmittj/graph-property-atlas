@@ -13,7 +13,6 @@ Exit code 0 if all pass, 1 if any fail.
 
 import os
 import sys
-import importlib.util
 import yaml
 
 # ---------------------------------------------------------------------------
@@ -38,38 +37,73 @@ def load_property_registry():
     return [p["id"] for p in data["properties"]]
 
 
+# ---------------------------------------------------------------------------
+# Checker cache (memoized to avoid repeated exec per witness)
+# ---------------------------------------------------------------------------
+
+_checker_cache = {}
+
 def load_checker(prop_id):
-    """Load a property checker from properties/<id>/check.sage."""
+    """Load a property checker from properties/<id>/check.sage (cached)."""
+    if prop_id in _checker_cache:
+        return _checker_cache[prop_id]
     checker_path = os.path.join(PROPERTIES_DIR, prop_id, "check.sage")
     if not os.path.exists(checker_path):
         raise FileNotFoundError(f"Checker not found: {checker_path}")
-    # Read and exec the sage file to get the check function
     with open(checker_path) as f:
         code = f.read()
     namespace = {}
     exec(compile(code, checker_path, "exec"), namespace)
     if "check" not in namespace:
         raise ValueError(f"Checker {checker_path} does not define a 'check' function")
-    return namespace["check"]
+    _checker_cache[prop_id] = namespace["check"]
+    return _checker_cache[prop_id]
 
+
+# ---------------------------------------------------------------------------
+# Graph decoding
+# ---------------------------------------------------------------------------
 
 def decode_graph(graph_data):
-    """Decode a graph from witness YAML data."""
+    """Decode a graph from witness YAML data.
+
+    Validates that the result is a simple graph with the declared vertex count.
+    """
     fmt = graph_data["format"]
     if fmt == "edge_list":
         n = graph_data["vertices"]
         edges = graph_data["data"]
+        # Validate edges before constructing graph
+        for edge in edges:
+            if len(edge) != 2:
+                raise ValueError(f"Edge must have exactly 2 endpoints, got {edge}")
+            u, v = edge
+            if u == v:
+                raise ValueError(f"Self-loop not allowed: {u}-{v}")
+            if not (0 <= u < n and 0 <= v < n):
+                raise ValueError(
+                    f"Edge endpoint out of range [0, {n}): {u}-{v}"
+                )
+        # Check for multi-edges
+        edge_set = set()
+        for u, v in edges:
+            canon = (min(u, v), max(u, v))
+            if canon in edge_set:
+                raise ValueError(f"Duplicate edge: {u}-{v}")
+            edge_set.add(canon)
         G = Graph(n)
         for u, v in edges:
             G.add_edge(u, v)
         return G
-    elif fmt == "graph6":
-        return Graph(graph_data["data"])
-    elif fmt == "sparse6":
+    elif fmt in ("graph6", "sparse6"):
         return Graph(graph_data["data"])
     else:
         raise ValueError(f"Unknown graph format: {fmt}")
 
+
+# ---------------------------------------------------------------------------
+# Witness verification
+# ---------------------------------------------------------------------------
 
 def verify_witness(filepath, property_ids, min_vert):
     """Verify a single witness file. Returns list of error messages."""
