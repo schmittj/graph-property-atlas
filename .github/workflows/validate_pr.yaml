@@ -27,8 +27,13 @@ jobs:
           FILES=$(git diff --name-only origin/main...HEAD -- witnesses/ contradictions/ | tr '\n' ' ')
           echo "files=$FILES" >> "$GITHUB_OUTPUT"
 
-      - name: Compute current status
-        run: python scripts/compute_status.py
+      - name: Compute base status (from main, before PR changes)
+        run: |
+          # Temporarily restore main's data files to compute pre-PR status
+          git checkout origin/main -- witnesses/ contradictions/ properties/ config.yaml
+          python scripts/compute_status.py
+          # Restore PR branch files (status.json is gitignored, so it persists)
+          git checkout HEAD -- .
 
       - name: Validate added files
         if: steps.changed.outputs.files != ''
