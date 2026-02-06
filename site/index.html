@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graph Property Atlas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Graph Property Atlas</h1>
+    <p class="subtitle">
+      Classifying combinations of graph properties as
+      <span class="tag realized">realized</span>,
+      <span class="tag impossible">impossible</span>, or
+      <span class="tag open">open</span>.
+    </p>
+  </header>
+
+  <main>
+    <!-- Summary -->
+    <section id="summary">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="stat-properties">-</div>
+          <div class="stat-label">Properties</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-cells">-</div>
+          <div class="stat-label">Total cells</div>
+        </div>
+        <div class="stat-card realized">
+          <div class="stat-number" id="stat-realized">-</div>
+          <div class="stat-label">Realized</div>
+        </div>
+        <div class="stat-card impossible">
+          <div class="stat-number" id="stat-impossible">-</div>
+          <div class="stat-label">Impossible</div>
+        </div>
+        <div class="stat-card open">
+          <div class="stat-number" id="stat-open">-</div>
+          <div class="stat-label">Open</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-fill">-</div>
+          <div class="stat-label">Fill rate</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Implications -->
+    <section id="implications-section">
+      <h2>Implication Graph</h2>
+      <p class="section-desc">Arrows show proven implications between properties (from size-2 contradictions).</p>
+      <div id="implications-graph"></div>
+    </section>
+
+    <!-- Cell explorer -->
+    <section id="explorer">
+      <h2>Cell Explorer</h2>
+      <p class="section-desc">Filter by property values. Click a column header to cycle: any &rarr; T &rarr; F &rarr; any.</p>
+
+      <div id="filter-bar"></div>
+
+      <div id="cell-count"></div>
+
+      <div class="table-wrapper">
+        <table id="cell-table">
+          <thead><tr id="cell-header"></tr></thead>
+          <tbody id="cell-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Witnesses -->
+    <section id="witnesses-section">
+      <h2>Witnesses</h2>
+      <table id="witness-table" class="data-table">
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Description</th>
+            <th>Vertices</th>
+            <th>Properties</th>
+          </tr>
+        </thead>
+        <tbody id="witness-body"></tbody>
+      </table>
+    </section>
+
+    <!-- Contradictions -->
+    <section id="contradictions-section">
+      <h2>Contradictions</h2>
+      <table id="contradiction-table" class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Assignments</th>
+            <th>Minimal</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="contradiction-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      <a href="https://github.com/schmittj/graph-property-atlas">GitHub</a> &middot;
+      Every claim verified by SageMath + Lean 4/Mathlib &middot;
+      <span id="generated-at"></span>
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -26,6 +26,7 @@ lean/GraphAtlas/Contradictions/
 # CI-generated caches (not committed)
 property_vectors.json
 status.json
+site/_data/
 
 # OS
 .DS_Store
