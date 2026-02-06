@@ -43,7 +43,7 @@ def load_property_registry():
 # This avoids duplicating the checker cache, graph decoding, etc.
 
 _verify_witnesses_path = os.path.join(REPO_ROOT, "scripts", "verify_witnesses.sage")
-_vw_namespace = {}
+_vw_namespace = {"__file__": _verify_witnesses_path}
 with open(_verify_witnesses_path) as _f:
     exec(compile(_f.read(), _verify_witnesses_path, "exec"), _vw_namespace)
 
