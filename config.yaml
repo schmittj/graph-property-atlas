@@ -1,0 +1,4 @@
+# Graph Property Atlas — Global Configuration
+
+min_vert: 3          # Minimum number of vertices for a witness graph
+sage_version: "10.7"  # Pinned SageMath version (conda-forge)

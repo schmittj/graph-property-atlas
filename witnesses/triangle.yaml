@@ -1,0 +1,19 @@
+description: "Complete graph on 3 vertices (K_3, triangle)"
+
+graph:
+  format: edge_list
+  vertices: 3
+  data: [[0,1], [1,2], [2,0]]
+
+properties:
+  connected: true
+  bipartite: false
+  forest: false
+
+counter_certificates:
+  bipartite_odd_cycle: [0, 1, 2]
+  forest_cycle: [0, 1, 2]
+
+provenance:
+  source: "Elementary"
+  found_by: "manual"

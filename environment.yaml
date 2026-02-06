@@ -1,0 +1,10 @@
+# Conda environment for Graph Property Atlas
+# Create: conda env create -f environment.yaml
+# Activate: conda activate graph-atlas
+name: graph-atlas
+channels:
+  - conda-forge
+dependencies:
+  - sage=10.7
+  - python=3.12
+  - pyyaml

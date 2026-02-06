@@ -1,0 +1,10 @@
+properties:
+  - id: connected
+    lean_name: IsConnected
+    display_name: Connected
+  - id: bipartite
+    lean_name: IsBipartite
+    display_name: Bipartite
+  - id: forest
+    lean_name: IsForest
+    display_name: Forest (acyclic)

@@ -1,0 +1,35 @@
+# Exploratory / pre-release analysis files
+GraphProp*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+
+# Sage preparser output
+*.sage.py
+
+# Lean
+.lake/
+lake-packages/
+lake-manifest.json
+build/
+
+# CI-generated caches (not committed)
+property_vectors.json
+status.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Conda environment (managed via environment.yaml)

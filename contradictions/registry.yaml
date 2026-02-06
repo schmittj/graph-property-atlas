@@ -1,0 +1,9 @@
+contradictions:
+  - id: Nbipartite__forest
+    assignments:
+      bipartite: false
+      forest: true
+    minimal: yes
+    notes: "Forests are bipartite: acyclic graphs contain no odd cycle."
+    refs:
+      - "Any graph theory textbook"

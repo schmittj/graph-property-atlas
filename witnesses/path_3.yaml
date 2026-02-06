@@ -1,0 +1,18 @@
+description: "Path graph on 3 vertices (P_3)"
+
+graph:
+  format: edge_list
+  vertices: 3
+  data: [[0,1], [1,2]]
+
+properties:
+  connected: true
+  bipartite: true
+  forest: true
+
+certificates:
+  bipartite_coloring: {0: 0, 1: 1, 2: 0}
+
+provenance:
+  source: "Elementary"
+  found_by: "manual"

@@ -1,0 +1,20 @@
+description: "Two disjoint triangles (K_3 + K_3), 6 vertices"
+
+graph:
+  format: edge_list
+  vertices: 6
+  data: [[0,1], [1,2], [2,0], [3,4], [4,5], [5,3]]
+
+properties:
+  connected: false
+  bipartite: false
+  forest: false
+
+counter_certificates:
+  connected_components: [[0, 1, 2], [3, 4, 5]]
+  bipartite_odd_cycle: [0, 1, 2]
+  forest_cycle: [0, 1, 2]
+
+provenance:
+  source: "Elementary"
+  found_by: "manual"

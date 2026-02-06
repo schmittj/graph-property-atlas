@@ -1,0 +1,21 @@
+description: "Cycle graph on 4 vertices (C_4)"
+
+graph:
+  format: edge_list
+  vertices: 4
+  data: [[0,1], [1,2], [2,3], [3,0]]
+
+properties:
+  connected: true
+  bipartite: true
+  forest: false
+
+certificates:
+  bipartite_coloring: {0: 0, 1: 1, 2: 0, 3: 1}
+
+counter_certificates:
+  forest_cycle: [0, 1, 2, 3]
+
+provenance:
+  source: "Elementary"
+  found_by: "manual"
