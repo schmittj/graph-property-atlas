@@ -26,7 +26,7 @@ properties:               # every tracked property, no more, no less
   bipartite: false
   forest: false
 
-certificates:             # optional, for faster/certified verification
+counter_certificates:     # optional, proves a property is FALSE
   bipartite_odd_cycle: [0, 1, 2, 3, 4]
 
 provenance:
@@ -113,7 +113,15 @@ modes and naming conventions.
 | Contradiction dirs | sorted IDs, `N` prefix for false, `__`-joined | `Nbipartite__forest` |
 | Lean theorems | dir name with `__`→`_`, `N`→`not_`, + `_contradiction` | `not_bipartite_forest_contradiction` |
 
-## Running CI Locally
+## CI and Validation
+
+CI runs automatically on PRs: Sage verification, Lean build, consistency checks.
+
+**Note:** The PR validation workflow (`validate_pr.yaml`) is currently
+**experimental** and may produce false positives. If CI rejects a valid
+contribution, please open an issue.
+
+### Running Verification Locally
 
 ```bash
 # Full verification suite

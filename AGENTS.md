@@ -1,4 +1,4 @@
-# Graph Property Atlas — Agent & Workflow Guide
+# Graph Property Atlas — Development Guide
 
 ## Project Overview
 
@@ -43,10 +43,9 @@ See `DESIGN_SPEC.md` §4 for the full directory structure. Key points:
 
 ## Working with Lean
 
-- Claude skills for Lean 4 are available (build, repair, sorry-filling, etc.)
-- Load these when working on Lean proof files.
-- Johannes has limited Mathlib experience — document Lean decisions clearly.
-- The lean/ directory is built by CI using `scripts/assemble_lean.py`.
+- Property predicates are `abbrev`s wrapping Mathlib definitions (transparent to tactics).
+- The `lean/` directory is built by CI using `scripts/assemble_lean.py`.
+- See `docs/mathlib_graph_theory.md` for the Mathlib API reference.
 
 ## Working with SageMath
 
@@ -72,5 +71,3 @@ misalignment but should be optional since it can be slow.
 
 - Work on `main` for now (single-developer phase).
 - Commit frequently with clear messages describing what was added/changed.
-- GraphProp* files are .gitignored — they contain pre-project analysis and may be
-  incorporated later.
