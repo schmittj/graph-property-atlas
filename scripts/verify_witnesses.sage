@@ -52,7 +52,6 @@ def load_checker_module(prop_id):
 
     Returns a dict with:
       - "check": the main check function
-      - "check_no_certs": generic algorithm (if defined)
       - "mode": CERTIFICATE_MODE ("generic", "certified", or "both")
     """
     if prop_id in _checker_cache:
@@ -68,7 +67,6 @@ def load_checker_module(prop_id):
         raise ValueError(f"Checker {checker_path} does not define a 'check' function")
     module = {
         "check": namespace["check"],
-        "check_no_certs": namespace.get("check_no_certs"),
         "mode": namespace.get("CERTIFICATE_MODE", "generic"),
     }
     _checker_cache[prop_id] = module
@@ -190,10 +188,10 @@ def verify_witness(filepath, property_ids, min_vert, cross_check=False):
             continue
 
         # Cross-check: if mode is "both" and --cross-check is enabled,
-        # also run the generic algorithm and verify agreement
-        if cross_check and mode == "both" and module["check_no_certs"] is not None:
+        # also run check() without certs (= generic path) and verify agreement
+        if cross_check and mode == "both" and kwargs:
             try:
-                generic_result = module["check_no_certs"](G)
+                generic_result = checker(G)
             except Exception as e:
                 errors.append(
                     f"{name}/{prop_id}: Cross-check (generic algorithm) raised error: {e}"

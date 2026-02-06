@@ -82,6 +82,3 @@ def check(G, **kwargs):
     return G.is_bipartite()
 
 
-def check_no_certs(G):
-    """Generic algorithm, ignoring all certificates. Used for cross-checking."""
-    return G.is_bipartite()

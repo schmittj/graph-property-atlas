@@ -228,9 +228,9 @@ Each checker file must define a module-level `CERTIFICATE_MODE` constant and a `
 
 | Mode | Meaning | `check_no_certs` | Example properties |
 |------|---------|-------------------|--------------------|
-| `"generic"` | Standard algorithm, no certificates needed. | Not needed (check already is generic). | `connected`, `forest` |
-| `"both"` | Has both generic and certified paths. If certs are provided, validates them; otherwise falls back to generic. | Required (enables cross-checking). | `bipartite`, `hamiltonian` |
-| `"certified"` | No practical generic algorithm. Witnesses must provide certificates. | Not defined. | `cayley`, `vertex_transitive` |
+| `"generic"` | Standard algorithm, no certificates needed. | `connected`, `forest` |
+| `"both"` | Has both generic and certified paths. If certs are provided, validates them; otherwise falls back to generic. | `bipartite`, `hamiltonian` |
+| `"certified"` | No practical generic algorithm. Witnesses must provide certificates. | `cayley`, `vertex_transitive` |
 
 #### API
 
@@ -248,21 +248,21 @@ def check(G, **kwargs):
         A simple graph.
     **kwargs : dict
         Certificate/counter-certificate arguments (from witness YAML).
+        When no certs are provided, falls back to generic algorithm
+        (for "generic" and "both" modes).
 
     Returns
     -------
     bool
     """
-
-# Required for "both" mode, enables --cross-check:
-def check_no_certs(G):
-    """Generic algorithm only, ignoring all certificates."""
 ```
+
+Note: `check(G)` without kwargs always gives the generic result. This means cross-checking needs no separate function — just call `check` with and without certs and compare.
 
 #### Verification modes
 
-- `sage verify_witnesses.sage` — uses `check(G, **certs)`. Fast: certified properties use certificate validation only.
-- `sage verify_witnesses.sage --cross-check` — additionally calls `check_no_certs(G)` for `"both"`-mode properties and verifies agreement. Slower but catches cert/algorithm misalignment.
+- `sage verify_witnesses.sage` — calls `check(G, **certs)`. Fast: certified properties use certificate validation only.
+- `sage verify_witnesses.sage --cross-check` — for `"both"`-mode properties, additionally calls `check(G)` (no certs, i.e. generic path) and verifies agreement. Catches cert/algorithm misalignment.
 
 ### 5.3 Certificates and Counter-Certificates
 

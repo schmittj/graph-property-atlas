@@ -58,9 +58,9 @@ See `DESIGN_SPEC.md` §4 for the full directory structure. Key points:
 Each `check.sage` declares a `CERTIFICATE_MODE`:
 
 - **`"generic"`** — Cheap algorithm, no certificates. Just `check(G)`. (connected, forest)
-- **`"both"`** — Has generic + certified paths. Must also define `check_no_certs(G)`.
-  Default verification uses certs if present; `--cross-check` flag compares both.
-  (bipartite, hamiltonian)
+- **`"both"`** — Has generic + certified paths. `check(G)` without kwargs gives
+  the generic result; `check(G, **certs)` uses the certified path.
+  `--cross-check` calls both and compares. (bipartite, hamiltonian)
 - **`"certified"`** — No practical generic algorithm. Witnesses must provide certs.
   (cayley, vertex_transitive)
 
