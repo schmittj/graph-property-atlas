@@ -1,0 +1,19 @@
+description: "P_3 with an isolated vertex (disconnected forest, not regular)"
+
+graph:
+  format: edge_list
+  vertices: 4
+  data: [[0,1], [1,2]]
+
+properties:
+  connected: false
+  bipartite: true
+  forest: true
+  regular: false
+
+certificates:
+  bipartite_coloring: {0: 0, 1: 1, 2: 0, 3: 0}
+
+provenance:
+  source: "Elementary"
+  found_by: "manual"
