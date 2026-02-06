@@ -1,5 +1,6 @@
 # Exploratory / pre-release analysis files
 GraphProp*
+graph_property_overview_mathlib.md
 
 # Python
 __pycache__/
@@ -16,6 +17,7 @@ __pycache__/
 lake-packages/
 lake-manifest.json
 build/
+lean/GraphAtlas/Contradictions/
 
 # CI-generated caches (not committed)
 property_vectors.json
