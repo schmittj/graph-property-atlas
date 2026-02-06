@@ -29,12 +29,14 @@ jobs:
 
       - name: Compute base status (from main, before PR changes)
         run: |
-          # Restore main's data files and remove PR-only files (e.g. new witnesses)
-          git checkout origin/main -- witnesses/ contradictions/ properties/ config.yaml
-          git clean -fd witnesses/ contradictions/
+          # Compute status.json on origin/main (base) so validation is not self-referential.
+          # Important: a path-based checkout does NOT remove PR-added tracked files, so we
+          # temporarily check out the full origin/main commit.
+          MERGE_SHA=$(git rev-parse HEAD)
+          git checkout --force origin/main
           python scripts/compute_status.py
           # Restore PR state (status.json is gitignored, so it persists)
-          git checkout HEAD -- .
+          git checkout --force "$MERGE_SHA"
 
       - name: Validate added files
         if: steps.changed.outputs.files != ''
