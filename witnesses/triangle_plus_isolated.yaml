@@ -1,0 +1,19 @@
+description: "K_3 with an isolated vertex (4 vertices)"
+
+graph:
+  format: edge_list
+  vertices: 4
+  data: [[0,1], [1,2], [2,0]]
+
+properties:
+  connected: false
+  bipartite: false
+  forest: false
+  regular: false
+
+counter_certificates:
+  bipartite_odd_cycle: [0, 1, 2]
+
+provenance:
+  source: "Elementary"
+  found_by: "manual"
