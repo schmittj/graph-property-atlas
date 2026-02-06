@@ -53,9 +53,17 @@
     <!-- Cell explorer -->
     <section id="explorer">
       <h2>Cell Explorer</h2>
-      <p class="section-desc">Click column headers to filter: any &rarr; T &rarr; F &rarr; any.</p>
+      <p class="section-desc">Enable properties with checkboxes, then filter by T / F / A (any). Disabled properties are hidden from the table.</p>
 
       <div id="filter-bar"></div>
+
+      <div id="status-bar">
+        <span class="status-bar-label">Status:</span>
+        <button class="status-btn active" data-status="all">All</button>
+        <button class="status-btn" data-status="realized">Realized</button>
+        <button class="status-btn" data-status="impossible">Impossible</button>
+        <button class="status-btn" data-status="open">Open</button>
+      </div>
 
       <div id="cell-count"></div>
 
@@ -65,6 +73,8 @@
           <tbody id="cell-body"></tbody>
         </table>
       </div>
+
+      <div id="pagination"></div>
     </section>
 
     <!-- Witnesses -->
