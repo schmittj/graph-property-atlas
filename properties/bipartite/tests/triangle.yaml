@@ -1,0 +1,6 @@
+description: "K_3 — not bipartite (odd cycle)"
+graph:
+  format: edge_list
+  vertices: 3
+  data: [[0,1], [1,2], [0,2]]
+expected: false

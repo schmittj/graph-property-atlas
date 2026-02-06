@@ -1,0 +1,74 @@
+name: Verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  sage-verify:
+    name: SageMath Verification
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: environment.yaml
+          activate-environment: graph-atlas
+          miniforge-version: latest
+
+      - name: Verify witnesses
+        run: sage scripts/verify_witnesses.sage --cross-check
+
+      - name: Verify gallery
+        run: sage scripts/verify_gallery.sage --cross-check
+
+      - name: Verify property tests
+        run: sage scripts/verify_property_tests.sage
+
+      - name: Check consistency
+        run: python scripts/check_consistency.py
+
+      - name: Compute status
+        run: python scripts/compute_status.py
+
+      - name: Coverage report
+        run: python scripts/coverage_report.py
+
+      - name: Upload status artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: status
+          path: status.json
+
+  lean-build:
+    name: Lean Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Cache Mathlib
+        uses: actions/cache@v4
+        with:
+          path: |
+            lean/.lake
+            ~/.elan/toolchains
+          key: lean-${{ hashFiles('lean/lean-toolchain', 'lean/lakefile.lean') }}
+          restore-keys: lean-
+
+      - name: Get Mathlib cache
+        run: cd lean && lake exe cache get || true
+
+      - name: Assemble and build
+        run: python3 scripts/assemble_lean.py --check

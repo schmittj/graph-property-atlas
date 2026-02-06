@@ -66,7 +66,12 @@ def decode_graph6_order(data):
 
 
 def graph_order_size(graph_data):
-    """Extract (order, size) from graph data without Sage."""
+    """Extract (order, size) from graph data without Sage.
+
+    Returns (order, size). When size cannot be determined (graph6/sparse6),
+    returns sys.maxsize so unknown-size graphs lose tie-breaking against
+    graphs with known edge counts at the same order.
+    """
     fmt = graph_data.get("format", "")
     if fmt == "edge_list":
         order = graph_data.get("vertices", 0)
@@ -74,15 +79,14 @@ def graph_order_size(graph_data):
         return order, size
     elif fmt == "graph6":
         order = decode_graph6_order(graph_data.get("data", ""))
-        # Can't easily get edge count from graph6 without full decoding
-        return order, -1
+        return order, sys.maxsize
     elif fmt == "sparse6":
         # sparse6 starts with ':', then graph6-style N encoding
         raw = graph_data.get("data", "")
         if raw.startswith(":"):
             raw = raw[1:]
         order = decode_graph6_order(raw)
-        return order, -1
+        return order, sys.maxsize
     return 0, 0
 
 

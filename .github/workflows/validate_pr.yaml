@@ -1,0 +1,35 @@
+name: Validate PR
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Check PR adds new information
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Get changed files
+        id: changed
+        run: |
+          FILES=$(git diff --name-only origin/main...HEAD -- witnesses/ contradictions/ | tr '\n' ' ')
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
+
+      - name: Compute current status
+        run: python scripts/compute_status.py
+
+      - name: Validate added files
+        if: steps.changed.outputs.files != ''
+        run: python scripts/validate_pr.py --added-files ${{ steps.changed.outputs.files }}

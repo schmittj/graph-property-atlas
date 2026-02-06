@@ -1,6 +1,10 @@
 # Exploratory / pre-release analysis files
 GraphProp*
 graph_property_overview_mathlib.md
+codex_review*.md
+
+# Claude Code
+.claude/
 
 # Python
 __pycache__/

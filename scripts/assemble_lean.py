@@ -3,11 +3,10 @@
 Assemble and build the Lean project, including contradiction proofs.
 
 1. Copies lean_proof.lean from each contradiction directory into
-   lean/GraphAtlas/Contradictions/<id>.lean
-2. Generates lean/GraphAtlas.lean importing everything
+   lean/GraphAtlas/Contradictions/<id>.lean  (gitignored)
+2. Generates lean/GraphAtlas.lean importing everything (saved/restored after build)
 3. Runs `lake build`
-4. Checks for `sorry` in source files (not in Mathlib)
-5. Reports results
+4. With --check: scans for `sorry` and `axiom` declarations in project source files
 
 Usage:
   python3 scripts/assemble_lean.py           # assemble + build
@@ -84,15 +83,12 @@ def generate_root_module(contradiction_modules):
         lines.append(f"import GraphAtlas.Contradictions.{module_name}")
     lines.append("")
 
-    with open(ROOT_LEAN, "w") as f:
-        f.write("\n".join(lines))
+    return "\n".join(lines)
 
 
-def check_for_sorry(contradiction_modules):
+def check_for_sorry():
     """Check for 'sorry' in our source files (not Mathlib)."""
-    sorry_files = []
-
-    # Check all .lean files under lean/GraphAtlas/
+    hits = []
     for root, dirs, files in os.walk(GRAPH_ATLAS_DIR):
         for fname in files:
             if not fname.endswith(".lean"):
@@ -100,13 +96,28 @@ def check_for_sorry(contradiction_modules):
             fpath = os.path.join(root, fname)
             with open(fpath) as f:
                 content = f.read()
-            # Look for sorry as a standalone token (not in comments)
             for i, line in enumerate(content.splitlines(), 1):
                 stripped = line.split("--")[0]  # remove line comments
                 if re.search(r'\bsorry\b', stripped):
-                    sorry_files.append((fpath, i, line.strip()))
+                    hits.append((fpath, i, line.strip()))
+    return hits
 
-    return sorry_files
+
+def check_for_axioms():
+    """Check for 'axiom' declarations in our source files (not Mathlib)."""
+    hits = []
+    for root, dirs, files in os.walk(GRAPH_ATLAS_DIR):
+        for fname in files:
+            if not fname.endswith(".lean"):
+                continue
+            fpath = os.path.join(root, fname)
+            with open(fpath) as f:
+                content = f.read()
+            for i, line in enumerate(content.splitlines(), 1):
+                stripped = line.split("--")[0]  # remove line comments
+                if re.search(r'^\s*axiom\b', stripped):
+                    hits.append((fpath, i, line.strip()))
+    return hits
 
 
 def run_build():
@@ -134,43 +145,75 @@ def main():
     copied = copy_contradiction_proofs(proofs)
     print(f"\nCopied {len(copied)} proof(s) into lean/GraphAtlas/Contradictions/")
 
-    # 3. Generate root module
-    generate_root_module(copied)
+    # 3. Generate root module (save/restore original to avoid dirtying tracked file)
+    original_root = None
+    if os.path.exists(ROOT_LEAN):
+        with open(ROOT_LEAN) as f:
+            original_root = f.read()
+
+    new_root = generate_root_module(copied)
+    with open(ROOT_LEAN, "w") as f:
+        f.write(new_root)
     print("Generated lean/GraphAtlas.lean")
 
     # 4. Build
     print("\nRunning lake build...")
-    result = run_build()
+    try:
+        result = run_build()
 
-    if result.stdout:
-        # Print last 20 lines of stdout
-        lines = result.stdout.strip().splitlines()
-        for line in lines[-20:]:
-            print(f"  {line}")
-
-    if result.returncode != 0:
-        print(f"\nBUILD FAILED (exit code {result.returncode})")
-        if result.stderr:
-            for line in result.stderr.strip().splitlines()[-20:]:
+        if result.stdout:
+            lines = result.stdout.strip().splitlines()
+            for line in lines[-20:]:
                 print(f"  {line}")
-        return 1
 
-    print("\nBuild succeeded!")
-
-    # 5. Check for sorry (if --check)
-    if do_check:
-        print("\nChecking for sorry...")
-        sorry_files = check_for_sorry(copied)
-        if sorry_files:
-            print(f"WARNING: Found {len(sorry_files)} sorry occurrence(s):")
-            for fpath, lineno, line in sorry_files:
-                relpath = os.path.relpath(fpath, REPO_ROOT)
-                print(f"  {relpath}:{lineno}: {line}")
+        if result.returncode != 0:
+            print(f"\nBUILD FAILED (exit code {result.returncode})")
+            if result.stderr:
+                for line in result.stderr.strip().splitlines()[-20:]:
+                    print(f"  {line}")
             return 1
-        else:
-            print("No sorry found in project files!")
 
-    return 0
+        print("\nBuild succeeded!")
+
+        # 5. Check for sorry and axioms (if --check)
+        if do_check:
+            problems = []
+
+            print("\nChecking for sorry...")
+            sorry_hits = check_for_sorry()
+            if sorry_hits:
+                print(f"WARNING: Found {len(sorry_hits)} sorry occurrence(s):")
+                for fpath, lineno, line in sorry_hits:
+                    relpath = os.path.relpath(fpath, REPO_ROOT)
+                    print(f"  {relpath}:{lineno}: {line}")
+                problems.extend(sorry_hits)
+            else:
+                print("No sorry found in project files.")
+
+            print("\nChecking for axiom declarations...")
+            axiom_hits = check_for_axioms()
+            if axiom_hits:
+                print(f"WARNING: Found {len(axiom_hits)} axiom declaration(s):")
+                for fpath, lineno, line in axiom_hits:
+                    relpath = os.path.relpath(fpath, REPO_ROOT)
+                    print(f"  {relpath}:{lineno}: {line}")
+                problems.extend(axiom_hits)
+            else:
+                print("No axiom declarations found in project files.")
+
+            if problems:
+                return 1
+
+        return 0
+
+    finally:
+        # Restore original GraphAtlas.lean to keep working tree clean
+        if original_root is not None:
+            with open(ROOT_LEAN, "w") as f:
+                f.write(original_root)
+        # Clean up generated Contradictions directory
+        if os.path.isdir(CONTRADICTIONS_LEAN_DIR):
+            shutil.rmtree(CONTRADICTIONS_LEAN_DIR)
 
 
 if __name__ == "__main__":

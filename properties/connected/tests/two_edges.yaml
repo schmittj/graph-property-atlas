@@ -1,0 +1,6 @@
+description: "Two disjoint edges plus an isolated vertex — disconnected"
+graph:
+  format: edge_list
+  vertices: 5
+  data: [[0,1], [2,3]]
+expected: false

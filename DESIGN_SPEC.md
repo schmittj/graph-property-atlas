@@ -222,14 +222,14 @@ properties:
 
 ### 5.2 Property Checker (`properties/<id>/check.sage`)
 
-Each checker file must define a module-level `CERTIFICATE_MODE` constant and a `check` function. Optionally, it may define `check_no_certs` for cross-checking.
+Each checker file must define a module-level `CERTIFICATE_MODE` constant and a `check` function.
 
 #### Certificate Modes
 
-| Mode | Meaning | `check_no_certs` | Example properties |
-|------|---------|-------------------|--------------------|
+| Mode | Meaning | Example properties |
+|------|---------|-------------------|
 | `"generic"` | Standard algorithm, no certificates needed. | `connected`, `forest` |
-| `"both"` | Has both generic and certified paths. If certs are provided, validates them; otherwise falls back to generic. | `bipartite`, `hamiltonian` |
+| `"both"` | Has both generic and certified paths. `check(G)` gives generic result; `check(G, **certs)` validates certificates. | `bipartite`, `hamiltonian` |
 | `"certified"` | No practical generic algorithm. Witnesses must provide certificates. | `cayley`, `vertex_transitive` |
 
 #### API
@@ -295,10 +295,11 @@ Counter-certificates prove a property is FALSE, enabling fast verification of ne
 #### Rules
 
 - A witness file must not provide both a certificate and counter-certificate for the same property.
-- If a certificate is provided for a TRUE property, the checker verifies it **and** cross-checks against the standard algorithm.
-- If a counter-certificate is provided for a FALSE property, the checker verifies it **and** cross-checks against the standard algorithm.
+- If a certificate is provided for a TRUE property, the checker verifies it. Cross-checking against the generic algorithm is available via `--cross-check` (see below).
+- If a counter-certificate is provided for a FALSE property, the checker verifies it. Cross-checking is likewise optional.
 - If neither is provided, the checker runs the general algorithm.
 - Properties with O(V+E) algorithms (e.g. `connected`, `forest`) do not need certificates — the checker simply runs the standard algorithm. Certificates are most valuable for properties that are expensive to verify from scratch (e.g. `vertex_transitive`, `cayley`, `hamiltonian`).
+- **Cross-checking**: For `"both"`-mode properties, `verify_witnesses.sage --cross-check` additionally calls `check(G)` (no certs = generic path) and verifies agreement with the certified result. This catches cert/algorithm misalignment but is optional since it can be slow for expensive properties. CI should run with `--cross-check` for `"both"`-mode properties.
 
 ### 5.4 Witness Files (`witnesses/<name>.yaml`)
 
@@ -499,12 +500,12 @@ Contradiction proofs should import from `Lemmas/` rather than re-proving these f
 
 ### 5.11 Lean Build Assembly
 
-CI assembles a buildable Lean project by:
+CI assembles and builds the Lean project in-place:
 
-1. Creating a temporary Lean project with `lakefile.lean` and `lean-toolchain` from `lean/`.
-2. Copying `lean/GraphAtlas/Defs.lean`, all property definitions, and all shared lemmas.
-3. Copying each `lean_proof.lean` from every contradiction directory.
-4. Running `lake build`.
+1. Copying each `lean_proof.lean` from contradiction directories into `lean/GraphAtlas/Contradictions/` (gitignored).
+2. Regenerating `lean/GraphAtlas.lean` to import all modules (saved/restored after build).
+3. Running `lake build`.
+4. Optionally checking for `sorry` and `axiom` declarations (`--check`).
 
 Contributors write self-contained `lean_proof.lean` files that import property definitions and shared lemmas.
 
@@ -621,11 +622,11 @@ This is still a significant change (doubles the cell space) and should not be do
 
 ### `scripts/assemble_lean.py`
 
-Assemble a buildable Lean project in a temporary directory:
-1. Copy Lean infrastructure and property definitions.
-2. Copy shared lemmas from `lean/GraphAtlas/Lemmas/`.
-3. Copy all `lean_proof.lean` files from contradiction directories.
-4. Run `lake build` and report results.
+Assemble and build the Lean project (in-place, with save/restore of tracked files):
+1. Copy all `lean_proof.lean` files from contradiction directories into `lean/GraphAtlas/Contradictions/` (gitignored).
+2. Regenerate `lean/GraphAtlas.lean` importing all modules (original is saved and restored after build).
+3. Run `lake build` and report results.
+4. With `--check`: also scan for `sorry` and `axiom` declarations in project source files.
 
 ### `scripts/verify_witnesses.sage`
 

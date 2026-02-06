@@ -1,0 +1,6 @@
+description: "Empty graph on 3 vertices — bipartite (trivially 2-colorable)"
+graph:
+  format: edge_list
+  vertices: 3
+  data: []
+expected: true
