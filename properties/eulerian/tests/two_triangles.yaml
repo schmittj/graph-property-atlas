@@ -1,0 +1,6 @@
+description: "K_3 + K_3 — not Eulerian (disconnected with edges)"
+graph:
+  format: edge_list
+  vertices: 6
+  data: [[0,1], [1,2], [2,0], [3,4], [4,5], [5,3]]
+expected: false

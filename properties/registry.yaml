@@ -17,3 +17,6 @@ properties:
   - id: hamiltonian
     lean_name: GraphAtlas.IsHamiltonian
     display_name: Hamiltonian
+  - id: eulerian
+    lean_name: GraphAtlas.IsEulerian
+    display_name: Eulerian

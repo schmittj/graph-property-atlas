@@ -12,6 +12,7 @@ properties:
   regular: true
   triangle_free: false
   hamiltonian: false
+  eulerian: false
 
 counter_certificates:
   bipartite_odd_cycle: [0, 1, 2]

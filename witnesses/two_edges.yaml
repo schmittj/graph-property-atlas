@@ -12,6 +12,7 @@ properties:
   regular: true
   triangle_free: true
   hamiltonian: false
+  eulerian: false
 
 certificates:
   bipartite_coloring: {0: 0, 1: 1, 2: 0, 3: 1}

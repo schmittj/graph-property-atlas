@@ -1,0 +1,6 @@
+description: "Empty graph on 4 vertices — Eulerian (no edges, vacuously true)"
+graph:
+  format: edge_list
+  vertices: 4
+  data: []
+expected: true

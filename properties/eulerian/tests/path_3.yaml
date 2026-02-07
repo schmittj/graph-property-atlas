@@ -1,0 +1,6 @@
+description: "P_3 — not Eulerian (vertices 0 and 2 have odd degree)"
+graph:
+  format: edge_list
+  vertices: 3
+  data: [[0,1], [1,2]]
+expected: false

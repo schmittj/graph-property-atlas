@@ -12,6 +12,7 @@ properties:
   regular: true
   triangle_free: false
   hamiltonian: true
+  eulerian: true
 
 certificates:
   hamiltonian_cycle: [0, 1, 2]
