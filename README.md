@@ -28,9 +28,9 @@ The atlas classifies each cell as:
 
 | Properties | Cells | Realized | Impossible | Open | Fill rate |
 |------------|-------|----------|------------|------|-----------|
-| 4 (connected, bipartite, forest, regular) | 16 | 6 | 4 | 6 | 62.5% |
+| 6 (connected, bipartite, forest, regular, triangle_free, hamiltonian) | 64 | 8 | 16 | 40 | 37.5% |
 
-**Properties tracked:** connected, bipartite, forest, regular
+**Properties tracked:** connected, bipartite, forest, regular, triangle_free, hamiltonian
 
 **Impossibility proofs:**
 - *forest* ⇒ *bipartite* (acyclic graphs are 2-colorable) — [Lean proof](contradictions/Nbipartite__forest/lean_proof.lean)

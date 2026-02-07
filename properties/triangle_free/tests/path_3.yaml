@@ -1,0 +1,6 @@
+description: "P_3 — triangle-free (no triangles possible with 2 edges)"
+graph:
+  format: edge_list
+  vertices: 3
+  data: [[0,1], [1,2]]
+expected: true

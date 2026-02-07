@@ -10,6 +10,8 @@ properties:
   bipartite: false
   forest: false
   regular: false
+  triangle_free: false
+  hamiltonian: false
 
 counter_certificates:
   bipartite_odd_cycle: [0, 1, 2]

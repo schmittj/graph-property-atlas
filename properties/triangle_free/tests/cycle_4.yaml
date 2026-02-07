@@ -1,0 +1,6 @@
+description: "C_4 — triangle-free (4-cycle has no chords)"
+graph:
+  format: edge_list
+  vertices: 4
+  data: [[0,1], [1,2], [2,3], [3,0]]
+expected: true

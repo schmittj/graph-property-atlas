@@ -11,3 +11,9 @@ properties:
   - id: regular
     lean_name: GraphAtlas.IsRegular
     display_name: Regular
+  - id: triangle_free
+    lean_name: GraphAtlas.IsTriangleFree
+    display_name: Triangle-free
+  - id: hamiltonian
+    lean_name: GraphAtlas.IsHamiltonian
+    display_name: Hamiltonian

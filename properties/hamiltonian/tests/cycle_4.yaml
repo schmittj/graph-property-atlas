@@ -1,0 +1,6 @@
+description: "C_4 — Hamiltonian (the cycle itself)"
+graph:
+  format: edge_list
+  vertices: 4
+  data: [[0,1], [1,2], [2,3], [3,0]]
+expected: true

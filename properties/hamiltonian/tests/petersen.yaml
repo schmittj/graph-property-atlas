@@ -1,0 +1,5 @@
+description: "Petersen graph — not Hamiltonian (classical result)"
+graph:
+  format: graph6
+  data: "IsP@OkWHG"
+expected: false

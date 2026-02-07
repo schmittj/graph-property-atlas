@@ -10,6 +10,11 @@ properties:
   bipartite: false
   forest: false
   regular: true
+  triangle_free: false
+  hamiltonian: true
+
+certificates:
+  hamiltonian_cycle: [0, 1, 2]
 
 counter_certificates:
   bipartite_odd_cycle: [0, 1, 2]
